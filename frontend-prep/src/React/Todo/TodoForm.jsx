@@ -1,4 +1,4 @@
-export default function TodoForm({ addTodo, isEdit }){
+export default function TodoForm({ addTodo }){
 
     const [text, setText] = useState("");
     return (
@@ -16,4 +16,4 @@ export default function TodoForm({ addTodo, isEdit }){
             </button>
         </form>
     )
-}
+} 

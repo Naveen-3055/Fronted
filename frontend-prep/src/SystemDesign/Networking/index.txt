@@ -1,0 +1,174 @@
+DNS — Domain Name System
+
+DNS converts human-readable domain names into IP addresses.
+
+For example:
+
+google.com → IP address
+
+Understand the hierarchy:
+Level	Example
+Root	.
+TLD	.com
+Second-level domain	google
+Subdomain	mail
+
+Important concepts:
+- DNS resolution
+- DNS records: A, AAAA, CNAME, MX, TXT
+- DNS caching
+- DNS TTL
+- Recursive vs authoritative DNS servers
+- DNS propagation and troubleshooting
+
+Senior-level question:
+
+Why might a website work for one user but fail for another?
+
+Think about DNS cache, TTL, resolver differences, stale records and network configuration.
+
+
+HTTP/1.1 uses TCP for reliable communication.
+
+Imagine your frontend makes five API requests:
+
+HTTP/1.1 supports persistent connections through Keep-Alive, but it does not provide HTTP/2-style multiplexing.
+
+Multiple requests can be handled using multiple TCP connections.
+
+Main characteristics
+- Uses TCP.
+- Text-based message format.
+- Persistent connections supported.
+- Does not support multiplexing.
+- HTTP pipelining exists, but has limited practical adoption.
+- Browsers commonly open multiple connections to the same origin.
+
+Problem: Head-of-Line Blocking
+Suppose request A takes 3 seconds and request B takes 100 ms.
+
+With HTTP/1.1 pipelining, response B may have to wait behind response A on the same connection.
+
+This is called Head-of-Line (HOL) blocking.
+
+
+HTTP/2 solves many HTTP/1.1 limitations.
+
+Its biggest feature is Multiplexing.
+
+Instead of creating separate connections for concurrent requests, HTTP/2 can send multiple streams through one TCP connection.
+
+How multiplexing works
+Imagine you have three requests:
+- Request A: Users
+- Request B: Products
+- Request C: Orders
+HTTP/2 divides requests and responses into smaller frames.
+
+These frames from different streams can be interleaved over the same TCP connection.
+
+The browser can receive data for different streams without waiting for an entire response to finish first.
+Important HTTP/2 features
+1. Multiplexing
+
+Multiple concurrent streams over one TCP connection.
+
+2. Binary framing
+
+Unlike HTTP/1.1's textual message format, HTTP/2 uses binary frames.
+
+3. Header compression (HPACK)
+
+Compresses HTTP headers to reduce repeated header overhead.
+
+4. Stream prioritization
+
+Allows clients and servers to express preferences about which resources should receive attention.
+
+5. Server Push
+
+Originally allowed servers to proactively send resources.
+
+Important: HTTP/2 Server Push has been deprecated in mainstream browser implementations and should not be treated as a modern optimization strategy.
+The hidden problem: TCP Head-of-Line Blocking
+This is a very important interview concept.
+
+HTTP/2 supports multiplexing, but it still uses TCP.
+
+Suppose:
+- Stream A sends frames.
+- Stream B sends frames.
+- One TCP packet containing data for A gets lost.
+TCP guarantees ordered delivery of bytes.
+
+Until the missing TCP data is retransmitted, later bytes on that connection cannot be delivered to HTTP/2, even if they contain data for Stream B.
+
+Therefore:
+
+HTTP/2 solves HTTP-level HOL blocking, but not TCP-level HOL blocking.
+Trade-offs
+Advantages:
+- Multiplexing.
+- Fewer TCP connections.
+- Header compression.
+- Better resource utilization.
+- Efficient concurrent requests.
+Disadvantages:
+- TCP-level HOL blocking remains.
+- Packet loss can affect multiple streams.
+- More complex protocol implementation.
+- Performance depends on network conditions.
+
+HTTP/3
+HTTP/3 addresses the TCP-level HOL blocking problem.
+
+Its biggest change:
+
+HTTP/3 uses QUIC instead of TCP.
+
+QUIC is a transport protocol built on top of UDP.
+
+How QUIC works
+In HTTP/3:
+- QUIC provides reliable delivery.
+- Each HTTP request/response uses an independent QUIC stream.
+- Packet loss affecting one stream does not generally block delivery of data on other streams.
+- TLS 1.3 security is integrated into QUIC.
+
+If a packet containing data for Stream A is lost, Stream B and Stream C can continue receiving their available data.
+
+This is the major advantage over HTTP/2.
+
+Important HTTP/3 features
+1. QUIC over UDP.
+2. Independent streams.
+3. Reduced transport-level HOL blocking.
+4. TLS 1.3 integration.
+5. Faster connection establishment in many scenarios.
+6. Connection migration.
+7. QPACK header compression.
+
+
+What is connection migration?
+
+Imagine you're using your application on your mobile phone.
+1. You connect through Wi-Fi.
+2. You move outside and Wi-Fi disconnects.
+3. Your phone switches to mobile data.
+4. Your IP address changes.
+Traditional TCP connections are tied to their network connection endpoints.
+
+QUIC supports connection migration using connection IDs, allowing an established connection to survive certain network changes.
+
+This is especially useful for mobile applications.
+
+The most important trade-offs
+Let's compare them from an engineering perspective.
+Scenario	Preferred consideration
+Simple legacy application	HTTP/1.1 may be sufficient
+Multiple API requests	HTTP/2 multiplexing
+Large number of static assets	HTTP/2 or HTTP/3
+Unreliable mobile network	HTTP/3 can help
+High packet-loss network	HTTP/3 can offer better stream isolation
+Restricted UDP network	HTTP/2 fallback
+Existing infrastructure	Consider migration cost and compatibility
