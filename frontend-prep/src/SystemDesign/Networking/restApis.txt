@@ -1,0 +1,15 @@
+# REST API – Interview Explanation
+
+REST (Representational State Transfer) is an architectural style used to build APIs that allow frontend and backend applications to communicate over HTTP. REST APIs use standard HTTP methods such as GET, POST, PUT, PATCH, and DELETE to perform CRUD operations on resources. They typically exchange data in JSON format and use HTTP status codes such as 200, 201, 400, 401, 404, and 500 to communicate request results. One of the important principles of REST is **statelessness**, which means every request must contain all the information required by the server to process it independently, without depending on previous requests. This makes REST APIs scalable, flexible, and easier to maintain. REST also supports caching and separation of concerns, allowing frontend and backend teams to develop applications independently.
+
+
+
+Architectural style
+
+HTTP methods
+
+CRUD operations
+
+Statelessness
+
+Scalability
