@@ -64,7 +64,7 @@ function memoizeA(fn){
 
         }
 
-        if(currrent.has('result')){
+        if(current.has('result')){
             return current.get('result');
         }
 
@@ -81,6 +81,7 @@ function memoizeA(fn){
 // - Supports BigInt.
 // - Supports object references.
 // - Doesn't convert arguments into strings.
+
  const weakMapCache = new WeakMap();
 function memoizeB(fn){
    
